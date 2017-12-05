@@ -1,9 +1,13 @@
 
 //import statements
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Scanner;
+
 
 /**
- * Root bear Algorithm
+ * Root bear Algorithm - Can the bear cross the canal
  * 
  * @author Akanksha
  * @since December 02, 2017
@@ -11,16 +15,17 @@ import java.util.*;
  */
 public class RootBear {
 
+	//global variables
 	private static final int SOURCE = 0;
 	private Queue<Integer> queue;
 	private int[] visited;
+	private static int diameter;
 
 	public static void main(String args[]) {
 
 		Vertex northWall;
 		Vertex southWall;
-		int diameter;
-		int trees;
+		int trees; //number of tress in the problem
 		RootBear rb = new RootBear();
 		Graph graph;
 		int[] firstLine = new int[4];
@@ -29,6 +34,7 @@ public class RootBear {
 		String line = sc.nextLine();
 		Scanner lineScanner = new Scanner(line);
 
+		//reads the first 4 arguments on the line 
 		for(int i = 0; i< 4; i++) {
 			firstLine[i] = lineScanner.nextInt();
 		}
@@ -39,11 +45,12 @@ public class RootBear {
 
 		northWall = rb.new Vertex(0,firstLine[0]);
 		southWall = rb.new Vertex(0, firstLine[1]);		
-		graph.addVertex(northWall);
-		graph.addVertex(southWall);
+		graph.addVertex(northWall); //add vertex north
+		graph.addVertex(southWall); //add vertex south
 
 		Scanner vertexScanner;
 		
+		//reads all the x and y position of the tress and adds to graph
 		for(int i = 0; i < firstLine[3]; i++) {
 			line = sc.nextLine();
 			vertexScanner = new Scanner(line);
@@ -55,14 +62,14 @@ public class RootBear {
 				vertexScanner.close();
 			}
 		}
-		System.out.println("--------------------------");
-
+		
 		lineScanner.close();
 		sc.close();
+		
+		System.out.println("--------------------------");
+		rb.findAllEdges(graph, northWall, southWall);
 
-		rb.findAllEdges(graph, diameter, northWall, southWall);
-
-		rb.bfs(graph.adjacencyMatrix,SOURCE);
+		rb.bfs(graph.adjacencyMatrix,SOURCE); //run BFS on the graph
 		
 		if(rb.isConnected()) {
 			System.out.println("Can pass?: NO");
@@ -73,9 +80,10 @@ public class RootBear {
 	} // main
 
 	/**
+	 * Runs the BFS algorithm from one wall
 	 * 
-	 * @param adj_matrix
-	 * @param source
+	 * @param adj_matrix - adjency matrix
+	 * @param source - index
 	 */
 	public void bfs(int adj_matrix[][], int source) {
 		queue = new LinkedList<Integer>();
@@ -100,19 +108,20 @@ public class RootBear {
 	}
 
 	/**
+	 * Finds all the edges given the points. Only adds an edge if distance between them
+	 * is less than the diameter of the bear.
 	 * 
-	 * @param g
-	 * @param diameter
-	 * @param northWall
-	 * @param southWall
+	 * @param g - graph G
+	 * @param northWall - vertex of the north wall
+	 * @param southWall = vertex of the south wall
 	 */
-	public void findAllEdges(Graph g, int diameter, Vertex northWall, Vertex southWall ) {
+	public void findAllEdges(Graph g,Vertex northWall, Vertex southWall ) {
 		for(int i = 0; i < g.vertices.size(); i++) {
 			for(int j = 0; j<g.vertices.size(); j++) {
 				if(i != j) {
 					double distance = findDistance(g.vertices.get(i), g.vertices.get(j));
-					if(!canPass(distance, diameter)) {
-						g.addEdgeToMatrix(i, j);
+					if(!canPass(distance)) {
+						g.addEdgeToMatrix(i, j); // add edge to adjacency matrix
 					}
 				}
 			}
@@ -120,8 +129,9 @@ public class RootBear {
 	}
 	
 	/**
+	 * Checks to see if the graph is connected or not
 	 * 
-	 * @return
+	 * @return connected - true is the graph is connected, false otherwise
 	 */
 	public boolean isConnected() {
 		boolean connected = false;
@@ -136,20 +146,21 @@ public class RootBear {
 	}
 
 	/**
+	 * Checks to see if the bear can pass
 	 * 
-	 * @param distance
-	 * @param diameter
-	 * @return
+	 * @param distance - distance between two vertices
+	 * @return - true or false
 	 */
-	public boolean canPass(double distance,int diameter) {
+	public boolean canPass(double distance) {
 		return distance >= diameter ? true : false;
 	}
 
 	/**
+	 * Calculates the distance between two vertices
 	 * 
-	 * @param a
-	 * @param b
-	 * @return
+	 * @param a - vertex A
+	 * @param b - vertex B
+	 * @return distance - distance between two points
 	 */
 	public double findDistance(Vertex a, Vertex b) {
 		double distance;
@@ -161,9 +172,7 @@ public class RootBear {
 	}
 
 	/**
-	 * 
-	 *
-	 *
+	 * Graph class
 	 */
 	public class Graph{
 		public ArrayList<Vertex> vertices;
@@ -172,12 +181,12 @@ public class RootBear {
 		
 		
 		/**
-		 * 
-		 * @param v
+		 * Creates a graph
+		 * @param v - a vertex
 		 */
 		public Graph(int v) {
-			vertices = new ArrayList<Vertex>();
-			adjacencyMatrix = new int[v][v];
+			vertices = new ArrayList<Vertex>(); // arraylist to store the vertices
+			adjacencyMatrix = new int[v][v]; // 2d matrix to store the edges
 			V = v;
 		}
 
@@ -195,6 +204,9 @@ public class RootBear {
 			}
 		}
 
+		/**
+		 * Prints the adjacency matrix
+		 */
 		public void printAdjacencyMatrix() {
 			System.out.print("   ");
 			for (int k = 0; k < V; k++) {
@@ -219,19 +231,17 @@ public class RootBear {
 	} // Graph
 
 	/**
-	 * 
-	 * @author Akanksha
-	 *
+	 * Vertex class
 	 */
 	private class Vertex{
 		public int x;
 		public int y;
 
 		/**
-		 * Vertex 
+		 * Creates a Vertex object
 		 * 
-		 * @param myX
-		 * @param myY
+		 * @param myX - x coordinate
+		 * @param myY - y coordinate
 		 */
 		public Vertex (int myX, int myY) {
 			x = myX;
